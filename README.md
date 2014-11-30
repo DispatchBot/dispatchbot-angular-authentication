@@ -51,3 +51,25 @@ customized.
 You should now be able to start your application. Any HTTP calls that return a 401
 will be automatically redirected to have the user login. Any HTTP calls that return
 a 403 will redirect the user to /unauthorized.
+
+## `.netrc`
+
+If you are getting an error when installing the bower component, its probably
+because bower cannot access the private repo. You can get a summary of the problem
+and solution here: https://www.youtube.com/watch?v=ExU_ZcONHxs
+
+In short:
+
+    $ vim ~/.netrc
+
+Paste the contents:
+
+    machine github.com
+        username <github username>
+        password <github application token>
+
+*Note you must use 4 spaces for indentation in the above file!*
+
+Redirect SSH login to HTTPS login at github:
+
+    $ git config --global url."https://github".insteadOf git://github
