@@ -51,8 +51,8 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
 /**
  * The service.
  */
-module.factory('Session', ['$resource', function($resource) {
-  return $resource(API_HOST + '/users/:action.json', {}, {
+module.factory('Session', ['$resource', 'DispatchBotConfig', function($resource, DispatchBotConfig) {
+  return $resource(DispatchBotConfig.api_host + '/users/:action.json', {}, {
     login: {
       method: 'POST',
       params: {
