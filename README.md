@@ -40,6 +40,8 @@ In your `app.js` you need to define the authentication controllers and intercept
         controller: 'UnauthorizedController'
       })
     }).
+    // Configure where the API lives. Needed by our session service.
+    .constant('DispatchBotConfig', { 'api_host': 'http://localhost:3000' }).
     // Register the interceptor that handles the authentication.
     config(function ($httpProvider) {
       $httpProvider.interceptors.push('authInterceptor');
