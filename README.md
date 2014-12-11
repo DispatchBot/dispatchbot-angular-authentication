@@ -75,3 +75,13 @@ Paste the contents:
 Redirect SSH login to HTTPS login at github:
 
     $ git config --global url."https://github".insteadOf git://github
+
+## Organization ID discovery
+
+Many of the client applications will need to know the ID of the organization on
+which the user is performing operations on. If the organization key is known (often
+  through the subdomain), then the ID can be found by using this modules Organization
+  Service:
+
+
+    Organization.lookup({ key: 'organization_key' }, function(...) { ... })

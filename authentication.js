@@ -68,6 +68,14 @@ module.factory('Session', ['$resource', 'DispatchBotConfig', function($resource,
   })
 }]);
 
+module.factory('Organization', ['$resource', 'DispatchBotConfig', function($resource, DispatchBotConfig) {
+  return $resource(DispatchBotConfig.api_host + '/organizations/key/:key.json', {}, {
+    lookup: {
+      method: 'GET'
+    }
+  })
+}]);
+
 /**
  * The interceptor.
  */
