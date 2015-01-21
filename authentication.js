@@ -63,7 +63,7 @@ module.factory('SessionStore', ['$window', function($window) {
     return $window.sessionStorage.login;
   };
 
-  SessionStore.store = function() {
+  SessionStore.store = function(data) {
     $window.sessionStorage.token = data.token;
     $window.sessionStorage.login = data.login;
     $window.sessionStorage.user_id = data.user_id;
