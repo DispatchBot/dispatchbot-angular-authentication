@@ -2,7 +2,7 @@ var module = angular.module('dispatchbot.authentication', ['ngResource']);
 /**
  * Our authentication controllers.
  */
-module.controller('LoginController', ['$scope', '$window', '$location', 'Session', function ($scope, $window, $location, Session) {
+module.controller('LoginController', ['$scope', '$window', '$location', 'Session', 'SessionStore', function ($scope, $window, $location, Session, SessionStore) {
   var redirect = function($location, $window) {
     var redirectTo = '/';
     if ($window.sessionStorage.redirectAfterAuth) {
@@ -12,10 +12,11 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
     $location.path(redirectTo);
   };
 
-  if ($window.sessionStorage.token && $window.sessionStorage.email) {
+  if (SessionStore.isLoggedIn()) {
     redirect($location, $window);
     return;
   }
+
   $scope.user = {login: '', password: '', organization_id: '-1'};
   $scope.message = '';
   $scope.submit = function () {
@@ -23,14 +24,12 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
     Session.login(
       { user: $scope.user},
       function (data, status, headers, config) {
-        $window.sessionStorage.token = data.token;
-        $window.sessionStorage.email = $scope.user.login;
+        SessionStore.store(data);
         redirect($location, $window);
       },
       function (data, status, headers, config) {
         // Erase the token if the user fails to log in
-        delete $window.sessionStorage.token;
-        delete $window.sessionStorage.email;
+        SessionStore.destroy();
 
         // Handle login errors here
         $scope.message = 'Error: Invalid user or password';
@@ -40,8 +39,7 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
 }])
 .controller('LogoutController', ['$scope', '$window', '$location', 'Session', function($scope, $window, $location, Session) {
     Session.logout(function() {
-      delete $window.sessionStorage.token;
-      delete $window.sessionStorage.email;
+      SessionStore.destroy();
     })
 }])
 .controller('UnauthorizedController', ['$scope', function($scope) {
@@ -51,7 +49,40 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
 /**
  * The service.
  */
-module.factory('Session', ['$resource', 'DispatchBotConfig', function($resource, DispatchBotConfig) {
+module.factory('SessionStore', ['$window', function($window) {
+  var SessionStore = {};
+  SessionStore.getUserId = function() {
+    return $window.sessionStorage.user_id;
+  };
+
+  SessionStore.getToken = function() {
+    return $window.sessionStorage.token;
+  };
+
+  SessionStore.getLogin = function() {
+    return $window.sessionStorage.login;
+  };
+
+  SessionStore.store = function() {
+    $window.sessionStorage.token = data.token;
+    $window.sessionStorage.login = data.login;
+    $window.sessionStorage.user_id = data.user_id;
+  };
+
+  SessionStore.destroy = function() {
+    delete $window.sessionStorage.user_id;
+    delete $window.sessionStorage.token;
+    delete $window.sessionStorage.login;
+  };
+
+  SessionStore.isLoggedIn = function() {
+    return !!$window.sessionStorage.token;
+  };
+
+  return SessionStore;
+}]);
+
+module.factory('Session', ['$resource', 'DispatchBotConfig', '$window', function($resource, DispatchBotConfig, $window) {
   return $resource(DispatchBotConfig.api_host + '/users/:action.json', {}, {
     login: {
       method: 'POST',
@@ -65,7 +96,7 @@ module.factory('Session', ['$resource', 'DispatchBotConfig', function($resource,
         action: 'sign_out'
       }
     }
-  })
+  });
 }]);
 
 module.factory('Organization', ['$resource', 'DispatchBotConfig', function($resource, DispatchBotConfig) {
@@ -79,12 +110,11 @@ module.factory('Organization', ['$resource', 'DispatchBotConfig', function($reso
 /**
  * The interceptor.
  */
-module.factory('authInterceptor', function ($rootScope, $q, $window, $location) {
+module.factory('authInterceptor', ['$rootScope', '$q', '$window', '$location', 'SessionStore', function ($rootScope, $q, $window, $location, SessionStore) {
   var loginPath = '/login'; // TODO: This should not be hard-coded
 
-  var handle404 = function(response) {
-    delete $window.sessionStorage.token;
-    delete $window.sessionStorage.email;
+  var handle401 = function(response) {
+    SessionStore.destroy();
 
     if ($location.path().toLowerCase() != loginPath) {
       $window.sessionStorage.redirectAfterAuth = $location.path();
@@ -102,9 +132,9 @@ module.factory('authInterceptor', function ($rootScope, $q, $window, $location) 
   return {
     request: function (config) {
       config.headers = config.headers || {};
-      if ($window.sessionStorage.token) {
-        config.headers['X-User-Email'] = $window.sessionStorage.email;
-        config.headers['X-User-Token'] = $window.sessionStorage.token;
+      if (SessionStore.isLoggedIn()) {
+        config.headers['X-User-Email'] = SessionStore.getLogin();
+        config.headers['X-User-Token'] = SessionStore.getToken();
       }
       return config;
     },
@@ -112,7 +142,7 @@ module.factory('authInterceptor', function ($rootScope, $q, $window, $location) 
     responseError: function (response) {
       switch (response.status) {
         case 401:
-          handle404(response);
+          handle401(response);
           break;
         case 403:
           handle403(response);
@@ -122,4 +152,4 @@ module.factory('authInterceptor', function ($rootScope, $q, $window, $location) 
       return $q.reject(response);
     }
   };
-});
+}]);
