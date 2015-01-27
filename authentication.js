@@ -37,10 +37,10 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
     );
   };
 }])
-.controller('LogoutController', ['$scope', '$window', '$location', 'Session', function($scope, $window, $location, Session) {
-    Session.logout(function() {
-      SessionStore.destroy();
-    })
+.controller('LogoutController', ['$scope', '$window', '$location', 'Session', 'SessionStore', function($scope, $window, $location, Session, SessionStore) {
+  Session.logout(function() {
+    SessionStore.destroy();
+  })
 }])
 .controller('UnauthorizedController', ['$scope', function($scope) {
   // Just render a view
