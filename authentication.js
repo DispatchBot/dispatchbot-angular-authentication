@@ -20,7 +20,10 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
   $scope.user = {login: '', password: '', organization_id: '-1'};
   $scope.message = '';
   $scope.submit = function () {
-
+    if (!$scope.user.organization_id) {
+      $scope.user.organization_id = '-1';
+    } 
+    
     Session.login(
       { user: $scope.user},
       function (data, status, headers, config) {
@@ -100,11 +103,20 @@ module.factory('Session', ['$resource', 'DispatchBotConfig', '$window', function
 }]);
 
 module.factory('Organization', ['$resource', 'DispatchBotConfig', function($resource, DispatchBotConfig) {
-  return $resource(DispatchBotConfig.api_host + '/organizations/key/:key.json', {}, {
-    lookup: {
-      method: 'GET'
-    }
-  })
+  return{ 
+    lookup: $resource(DispatchBotConfig.api_host + '/organizations/key/:key.json', {}, {
+      query: {
+        method: 'GET'
+      }
+    }),
+    
+    providers : $resource(DispatchBotConfig.api_host + '/organizations/:id/providers.json', {}, {
+      query: {
+        method: 'Get',
+        isArray: true,
+      }
+    })
+  }
 }]);
 
 /**
