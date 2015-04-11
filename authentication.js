@@ -22,8 +22,8 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
   $scope.submit = function () {
     if (!$scope.user.organization_id) {
       $scope.user.organization_id = '-1';
-    } 
-    
+    }
+
     Session.login(
       { user: $scope.user},
       function (data, status, headers, config) {
@@ -103,20 +103,17 @@ module.factory('Session', ['$resource', 'DispatchBotConfig', '$window', function
 }]);
 
 module.factory('Organization', ['$resource', 'DispatchBotConfig', function($resource, DispatchBotConfig) {
-  return{ 
-    lookup: $resource(DispatchBotConfig.api_host + '/organizations/key/:key.json', {}, {
-      query: {
-        method: 'GET'
-      }
-    }),
-    
-    providers : $resource(DispatchBotConfig.api_host + '/organizations/:id/providers.json', {}, {
-      query: {
-        method: 'Get',
-        isArray: true,
-      }
-    })
-  }
+  return $resource(DispatchBotConfig.api_host + '/organizations', {}, {
+    lookup: {
+      method: 'GET',
+      url: DispatchBotConfig.api_host + '/organizations/key/:key.json'
+    },
+    providers: {
+      method: 'GET',
+      isArray: true,
+      url: DispatchBotConfig.api_host + '/organizations/:id/providers.json'
+    }
+  })
 }]);
 
 /**
@@ -138,7 +135,6 @@ module.factory('authInterceptor', ['$rootScope', '$q', '$window', '$location', '
 
   var handle403 = function(response) {
     $rootScope.$broadcast('event:unauthorized');
-    $location.path('/unauthorized'); // TODO: This should not be hard-coded
   };
 
   return {
