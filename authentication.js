@@ -20,6 +20,9 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
   $scope.user = {login: '', password: '', organization_id: '-1'};
   $scope.message = '';
   $scope.submit = function () {
+    if (!$scope.user.organization_id) {
+      $scope.user.organization_id = '-1';
+    }
 
     Session.login(
       { user: $scope.user},
@@ -100,9 +103,15 @@ module.factory('Session', ['$resource', 'DispatchBotConfig', '$window', function
 }]);
 
 module.factory('Organization', ['$resource', 'DispatchBotConfig', function($resource, DispatchBotConfig) {
-  return $resource(DispatchBotConfig.api_host + '/organizations/key/:key.json', {}, {
+  return $resource(DispatchBotConfig.api_host + '/organizations', {}, {
     lookup: {
-      method: 'GET'
+      method: 'GET',
+      url: DispatchBotConfig.api_host + '/organizations/key/:key.json'
+    },
+    providers: {
+      method: 'GET',
+      isArray: true,
+      url: DispatchBotConfig.api_host + '/organizations/:id/providers.json'
     }
   })
 }]);
@@ -126,7 +135,6 @@ module.factory('authInterceptor', ['$rootScope', '$q', '$window', '$location', '
 
   var handle403 = function(response) {
     $rootScope.$broadcast('event:unauthorized');
-    $location.path('/unauthorized'); // TODO: This should not be hard-coded
   };
 
   return {
