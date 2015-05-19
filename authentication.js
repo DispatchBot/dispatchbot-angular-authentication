@@ -17,9 +17,12 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
     return;
   }
 
-  $scope.$on('dispatchbot:userLogin:success', function (event, data) {
-    SessionStore.store(data);
+  $scope.$on('dispatchbot.authentication.success', function (event, data) {
     redirect($location, $window);
+  });
+  
+  $scope.$on('dispatchbot.authentication.failure', function (event, data) {
+    $scope.message = 'Error: Invalid user or password';
   });
 }])
 .controller('LogoutController', ['$scope', '$window', '$location', 'Session', 'SessionStore', function($scope, $window, $location, Session, SessionStore) {
@@ -144,11 +147,11 @@ module.factory('authInterceptor', ['$rootScope', '$q', '$window', '$location', '
   };
 }]);
 
-module.directive('userLogin', ['Session', 'SessionStore' , function(Session, SessionStore) {
+module.directive('dbUserLogin', ['Session', 'SessionStore' , function(Session, SessionStore) {
   return {
     restrict: 'E',
     templateUrl: function(elem,attrs) {
-           return attrs.templateUrl
+           return attrs.dbTemplateUrl
     },
     scope: {
       organization: "=dbOrganization"  
@@ -162,14 +165,13 @@ module.directive('userLogin', ['Session', 'SessionStore' , function(Session, Ses
         Session.login(
           { user: scope.user},
           function (data, status, headers, config) {
-            scope.$emit("dispatchbot:userLogin:success", data);
+            SessionStore.store(data);
+            scope.$emit("dispatchbot.authentication.success", data);
           },
           function (data, status, headers, config) {
             // Erase the token if the user fails to log in
             SessionStore.destroy();
-
-            // Handle login errors here
-            scope.message = 'Error: Invalid user or password';
+            scope.$emit("dispatchbot.authentication.failure", data);
           }
         );
       } 

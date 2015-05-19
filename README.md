@@ -88,6 +88,6 @@ which the user is performing operations on. If the organization key is known (of
 
 ## For Login functionality 
 
-Shift the code for login in some partial and use tag "user-login" to call partial on view. Set the partial path in to attribute "template-url"
+Shift the code for login in some partial and use tag "db-user-login" to call partial on view. Set the partial path in to attribute "db-template-url"
 
-    <user-login template-url="..."></user-login> 
+    <db-user-login db-template-url="..."></db-user-login> 
