@@ -109,13 +109,8 @@ module.factory('authInterceptor', ['$rootScope', '$q', '$window', '$location', '
 
   var handle401 = function(response) {
     SessionStore.destroy();
-
-    if ($location.path().toLowerCase() != loginPath) {
-      $window.sessionStorage.redirectAfterAuth = $location.path();
-    }
-
-    $rootScope.$broadcast('event:unauthorized');
-    $location.path(loginPath);
+    
+    $rootScope.$broadcast('dispatchbot:authentication:unauthenticated');
   };
 
   var handle403 = function(response) {
