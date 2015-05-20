@@ -76,4 +76,4 @@ This module will broadcast a number of login events on the `$scope`.
 
 * dispatchbot.authentication.success - On successful login
 * dispatchbot.authentication.failure - When authentication is attempted but results in a failure. Typically incorrect user/pass.
-* event:unauthorized - When the user attempts to perform an action they cannot.
+* dispatchbot:authorization:failure - When the user attempts to perform an action they cannot.
