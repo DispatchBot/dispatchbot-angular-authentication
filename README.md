@@ -2,14 +2,14 @@
 
 This module provides just about everything you need to provide authentication
 to the DispatchBot API in your angular application. The only thing you need to
-provide are the views/partials.
+provide is the login partial.
 
 ## Installation
 
 Define it in your `bower.json`
 
     {
-      "name": "dispatchbot-my-app",
+      "name": "my-dispatchbot-app",
       ...
       "dependencies": {
         "angular": "~1.3.0",
@@ -20,26 +20,13 @@ Define it in your `bower.json`
 
 ## Usage
 
-In your `app.js` you need to define the authentication controllers and interceptor.
+In your `app.js` you need to define the authentication config and interceptor.
 
     angular.module('dispatchbot.my-app', [
       'ngRoute',
       'dispatchbot.authentication',
       ...
     ]).
-    // Define the authentication controllers and routing
-    config(['$routeProvider', function($routeProvider) {
-      $routeProvider.when('/login', {
-        templateUrl: 'partials/login.html',
-        controller: 'LoginController'
-      }).when('/logout', {
-        templateUrl: 'partials/logout.html',
-        controller: 'LogoutController'
-      }).when('/unauthorized', {
-        templateUrl: 'partials/unauthorized.html',
-        controller: 'UnauthorizedController'
-      })
-    }).
     // Configure where the API lives. Needed by our session service.
     .constant('DispatchBotConfig', { 'api_host': 'http://localhost:3000' }).
     // Register the interceptor that handles the authentication.
@@ -47,47 +34,46 @@ In your `app.js` you need to define the authentication controllers and intercept
       $httpProvider.interceptors.push('authInterceptor');
     });
 
+### Controllers
+
+To create a login controller:
+
+    // Define the authentication controllers and routing
+    app.config(['$routeProvider', function($routeProvider) {
+      $routeProvider.when('/login', {
+        templateUrl: 'partials/login.html',
+        controller: 'LoginController'
+      }).when('/logout', {
+        templateUrl: 'partials/logout.html',
+        controller: 'LogoutController'
+      })
+    })
+
 Note that the resource paths such as `/login` are currently fixed and cannot be
 customized.
 
 You should now be able to start your application. Any HTTP calls that return a 401
-will be automatically redirected to have the user login. Any HTTP calls that return
-a 403 will redirect the user to /unauthorized.
+will be automatically redirected to have the user login.
 
-## `.netrc`
+### Directive
 
-If you are getting an error when installing the bower component, its probably
-because bower cannot access the private repo. You can get a summary of the problem
-and solution here: https://www.youtube.com/watch?v=ExU_ZcONHxs
+You can also have the user login form be controlled by a directive:
 
-In short:
-
-    $ vim ~/.netrc
-
-Paste the contents:
-
-    machine github.com
-        username <github username>
-        password <github application token>
-
-*Note you must use 4 spaces for indentation in the above file!*
-
-Redirect SSH login to HTTPS login at github:
-
-    $ git config --global url."https://github".insteadOf git://github
+    <db-user-login db-template-url="..."></db-user-login>
 
 ## Organization ID discovery
 
 Many of the client applications will need to know the ID of the organization on
 which the user is performing operations on. If the organization key is known (often
-  through the subdomain), then the ID can be found by using this modules Organization
-  Service:
-
+through the subdomain), then the ID can be found by using this modules Organization
+Service:
 
     Organization.lookup({ key: 'organization_key' }, function(...) { ... })
 
-## For Login functionality 
+## Events
 
-Shift the code for login in some partial and use tag "db-user-login" to call partial on view. Set the partial path in to attribute "db-template-url"
+This module will broadcast a number of login events on the `$scope`.
 
-    <db-user-login db-template-url="..."></db-user-login> 
+* dispatchbot.authentication.success - On successful login
+* dispatchbot.authentication.failure - When authentication is attempted but results in a failure. Typically incorrect user/pass.
+* event:unauthorized - When the user attempts to perform an action they cannot.

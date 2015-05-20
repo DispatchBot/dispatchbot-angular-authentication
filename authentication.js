@@ -20,7 +20,7 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
   $scope.$on('dispatchbot.authentication.success', function (event, data) {
     redirect($location, $window);
   });
-  
+
   $scope.$on('dispatchbot.authentication.failure', function (event, data) {
     $scope.message = 'Error: Invalid user or password';
   });
@@ -151,17 +151,17 @@ module.directive('dbUserLogin', ['Session', 'SessionStore' , function(Session, S
   return {
     restrict: 'E',
     templateUrl: function(elem,attrs) {
-           return attrs.dbTemplateUrl
+      return attrs.dbTemplateUrl
     },
     scope: {
-      organization: "=dbOrganization"  
+      organization: "=dbOrganization"
     },
     link: function(scope, element, attributes, ngModel) {
       scope.submit = function() {
         if (scope.organization) {
           scope.user.organization_id = scope.organization.id;
         }
-        
+
         Session.login(
           { user: scope.user},
           function (data, status, headers, config) {
@@ -174,8 +174,7 @@ module.directive('dbUserLogin', ['Session', 'SessionStore' , function(Session, S
             scope.$emit("dispatchbot.authentication.failure", data);
           }
         );
-      } 
-    } 
+      }
+    }
   };
 }]);
-
