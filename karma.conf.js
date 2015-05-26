@@ -18,6 +18,7 @@ module.exports = function(config) {
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/angular-resource/angular-resource.js',
       'authentication.js',
+      'test/test.js',
       'test/*Spec.js'
      ],
 
