@@ -118,7 +118,7 @@ module.factory('authInterceptor', ['$rootScope', '$q', '$window', '$location', '
   };
 
   var handle403 = function(response) {
-    $rootScope.$broadcast('event:unauthorized');
+    $rootScope.$broadcast('dispatchbot:authorization:failure');
   };
 
   return {
