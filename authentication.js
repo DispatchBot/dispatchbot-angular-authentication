@@ -18,7 +18,7 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
   }
 
   $scope.$on('dispatchbot.authentication.success', function (event, data) {
-    $scope.$parent.message = "You are login successfully";
+    $scope.$parent.message = "You have logged in successfully.";
     redirect($location, $window);
   });
 
@@ -113,7 +113,7 @@ module.factory('authInterceptor', ['$rootScope', '$q', '$window', '$location', '
     if ($location.path().toLowerCase() != loginPath) {
       $window.sessionStorage.redirectAfterAuth = $location.path();
     }
-    
+
     $rootScope.$broadcast('dispatchbot:authentication:unauthenticated', response);
   };
 
