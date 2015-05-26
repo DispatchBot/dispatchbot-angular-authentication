@@ -18,6 +18,7 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
   }
 
   $scope.$on('dispatchbot.authentication.success', function (event, data) {
+    $scope.$parent.message = "You have logged in successfully.";
     redirect($location, $window);
   });
 
@@ -109,13 +110,11 @@ module.factory('authInterceptor', ['$rootScope', '$q', '$window', '$location', '
 
   var handle401 = function(response) {
     SessionStore.destroy();
-
     if ($location.path().toLowerCase() != loginPath) {
       $window.sessionStorage.redirectAfterAuth = $location.path();
     }
 
-    $rootScope.$broadcast('dispatchbot:authorization:failure');
-    $location.path(loginPath);
+    $rootScope.$broadcast('dispatchbot:authentication:unauthenticated', response);
   };
 
   var handle403 = function(response) {
