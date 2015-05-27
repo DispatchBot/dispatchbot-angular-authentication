@@ -190,4 +190,35 @@ describe('authentication', function() {
       expect($rootScope.$broadcast).toHaveBeenCalledWith('dispatchbot:authorization:failure');
     });
   });
+  
+  describe('testing directive dbUserLogin', function() {
+    var  scope, $httpBackend, Seesion;
+     
+    var html = '<db-user-login db-template-url="login.html"></db-user-login>';
+    
+    beforeEach(
+      inject(function($rootScope, $compile, $injector) {
+        scope = $rootScope;
+        $httpBackend = $injector.get('$httpBackend');
+        Session = $injector.get('Session'); 
+        $httpBackend.when('GET', 'login.html').respond('')
+        // create the element and compile it
+        element = angular.element(html);
+        $compile(element)(scope);
+            
+        spyOn(Session, 'login');
+      })
+    );
+    
+    it("should call login", function() {
+      $httpBackend.flush();
+      scope = element.isolateScope()
+     
+      expect(scope.user).toBeDefined();
+      expect(typeof scope.submit).toBe('function');
+     
+      scope.submit();
+      expect(Session.login).toHaveBeenCalled();
+    });
+  });  
 });
