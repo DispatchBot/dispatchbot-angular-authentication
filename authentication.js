@@ -1,4 +1,4 @@
-var module = angular.module('dispatchbot.authentication', ['ngResource']);
+var module = angular.module('dispatchbot.authentication', ['ngResource', 'ngCookies']);
 /**
  * Our authentication controllers.
  */
@@ -37,34 +37,34 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
 /**
  * The service.
  */
-module.factory('SessionStore', ['$window', function($window) {
+module.factory('SessionStore', ['$cookies', function($cookies) {
   var SessionStore = {};
   SessionStore.getUserId = function() {
-    return $window.sessionStorage.user_id;
+    return $cookies['user_id'];
   };
 
   SessionStore.getToken = function() {
-    return $window.sessionStorage.token;
+    return $cookies['token'];
   };
 
   SessionStore.getLogin = function() {
-    return $window.sessionStorage.login;
+    return $cookies['login'];
   };
 
   SessionStore.store = function(data) {
-    $window.sessionStorage.token = data.token;
-    $window.sessionStorage.login = data.login;
-    $window.sessionStorage.user_id = data.user_id;
+    $cookies['token'] = data.token;
+    $cookies['login'] = data.login;
+    $cookies['user_id'] = data.user_id;
   };
 
   SessionStore.destroy = function() {
-    delete $window.sessionStorage.user_id;
-    delete $window.sessionStorage.token;
-    delete $window.sessionStorage.login;
+    delete $cookies["user_id"]
+    delete $cookies["token"]
+    delete $cookies["login"]
   };
 
   SessionStore.isLoggedIn = function() {
-    return !!$window.sessionStorage.token;
+    return !!$cookies['token'];
   };
 
   return SessionStore;
