@@ -2,7 +2,7 @@ var module = angular.module('dispatchbot.authentication', ['ngResource', 'ngCook
 /**
  * Our authentication controllers.
  */
-module.controller('LoginController', ['$scope', '$window', '$location', 'Session', 'SessionStore', function ($scope, $window, $location, Session, SessionStore) {
+module.controller('LoginController', ['$scope', '$rootScope', '$window', '$location', 'Session', 'SessionStore', function ($scope, $rootScope, $window, $location, Session, SessionStore) {
   var redirect = function($location, $window) {
     var redirectTo = '/';
     if ($window.sessionStorage.redirectAfterAuth) {
@@ -18,7 +18,7 @@ module.controller('LoginController', ['$scope', '$window', '$location', 'Session
   }
 
   $scope.$on('dispatchbot.authentication.success', function (event, data) {
-    $scope.$parent.message = "You have logged in successfully.";
+    $rootScope.parentMessage = "You have logged in successfully.";
     redirect($location, $window);
   });
 
