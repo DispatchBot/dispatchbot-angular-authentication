@@ -156,7 +156,7 @@ module.directive('dbUserLogin', ['Session', 'SessionStore' , function(Session, S
       organization: "=dbOrganization"
     },
     link: function(scope, element, attributes, ngModel) {
-      scope.user = {};
+      scope.user = {organization_id: "-1"};
      
       scope.submit = function() {
         if (scope.organization) {
