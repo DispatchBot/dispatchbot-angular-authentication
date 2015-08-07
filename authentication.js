@@ -24,7 +24,7 @@ module.controller('LoginController', ['$scope', '$rootScope', '$window', '$locat
 
   $scope.$on('dispatchbot.authentication.failure', function (event, data) {
     if (data.data.organization_key) {
-      $scope.$parent.patronRedirect = data.data.organization_key
+      $scope.$parent.desiredOrganizationKey = data.data.organization_key
       $location.path('/unauthorized')
     } else {
       $scope.message = 'Error: Invalid user or password';
