@@ -25,7 +25,7 @@ module.controller('LoginController', ['$scope', '$rootScope', '$window', '$locat
   $scope.$on('dispatchbot.authentication.failure', function (event, data) {
     if (data.data.organization_key) {
       $scope.$parent.desiredOrganizationKey = data.data.organization_key
-      $location.path('/unauthorized')
+      $location.path(data.aboutPath)
     } else {
       $scope.message = 'Error: Invalid user or password';
     }
@@ -158,7 +158,8 @@ module.directive('dbUserLogin', ['Session', 'SessionStore' , function(Session, S
       return attrs.dbTemplateUrl
     },
     scope: {
-      organization: "=dbOrganization"
+      organization: "=dbOrganization",
+      aboutPath: "=dbAboutPath"
     },
     link: function(scope, element, attributes, ngModel) {
       scope.user = {};
@@ -177,6 +178,7 @@ module.directive('dbUserLogin', ['Session', 'SessionStore' , function(Session, S
           function (data, status, headers, config) {
             // Erase the token if the user fails to log in
             SessionStore.destroy();
+            data.aboutPath = scope.aboutPath;
             scope.$emit("dispatchbot.authentication.failure", data);
           }
         );

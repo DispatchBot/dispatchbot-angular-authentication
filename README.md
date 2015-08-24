@@ -59,7 +59,7 @@ will be automatically redirected to have the user login.
 
 You can also have the user login form be controlled by a directive:
 
-    <db-user-login db-template-url="..."></db-user-login>
+    <db-user-login db-template-url="..." db-about-path="..."></db-user-login>
 
 ## Organization ID discovery
 
