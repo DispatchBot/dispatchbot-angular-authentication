@@ -33,7 +33,9 @@ module.controller('LoginController', ['$scope', '$rootScope', '$window', '$locat
   
   if (document.referrer == ShuttleBotConfig.protocol +  host() + '/' && !$rootScope.redirectFromResolve) {
     $rootScope.redirectFromResolve = true;
-    $scope.message = "Oops! In order to use ShuttleBot, you need to be working with a provider"; 
+    $rootScope.withOrganization.promise.then(function() {
+      $scope.message = "We identified that you are using ShuttleBot with " + $rootScope.organization.name + " and redirected you to their homepage. Please try to login again."; 
+    });
   }
   
   $scope.$on('dispatchbot.authentication.failure', function (event, data) {
