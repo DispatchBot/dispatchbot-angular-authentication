@@ -2,7 +2,7 @@ var module = angular.module('dispatchbot.authentication', ['ngResource', 'ngCook
 /**
  * Our authentication controllers.
  */
-module.controller('LoginController', ['$scope', '$rootScope', '$window', '$location', 'Session', 'SessionStore', function ($scope, $rootScope, $window, $location, Session, SessionStore) {
+module.controller('LoginController', ['$scope', '$rootScope', '$window', '$location', 'Session', 'SessionStore', 'ShuttleBotConfig', function ($scope, $rootScope, $window, $location, Session, SessionStore, ShuttleBotConfig) {
   var redirect = function($location, $window) {
     var redirectTo = '/';
     if ($window.sessionStorage.redirectAfterAuth) {
@@ -11,21 +11,38 @@ module.controller('LoginController', ['$scope', '$rootScope', '$window', '$locat
     }
     $location.path(redirectTo);
   };
-
+  
   if (SessionStore.isLoggedIn()) {
     redirect($location, $window);
     return;
   }
-
+  
   $scope.$on('dispatchbot.authentication.success', function (event, data) {
     $rootScope.parentMessage = "You have logged in successfully.";
     redirect($location, $window);
   });
-
+  
+  var host = function() {
+    var parts = ShuttleBotConfig.host.split('.');
+    if (parts.length > 2) {
+      return parts[1] + '.' + parts[2]
+    } else  {
+      return ShuttleBotConfig.host
+    }
+  }
+  
+  if (document.referrer == ShuttleBotConfig.protocol +  host() + '/' && !$rootScope.redirectFromResolve) {
+    $rootScope.redirectFromResolve = true;
+    $rootScope.withOrganization.promise.then(function() {
+      $scope.message = "We identified that you are using ShuttleBot with " + $rootScope.organization.name + " and redirected you to their homepage. Please try to login again."; 
+    });
+  }
+  
   $scope.$on('dispatchbot.authentication.failure', function (event, data) {
-    if (data.data.organization_key) {
-      $scope.$parent.desiredOrganizationKey = data.data.organization_key
-      $location.path('/unauthorized')
+    var desiredOrganizationKey = data.data.organization_key
+    
+    if (desiredOrganizationKey) {
+      $window.location.href = ShuttleBotConfig.protocol + desiredOrganizationKey + "." + ShuttleBotConfig.host + "/#/login"  
     } else {
       $scope.message = 'Error: Invalid user or password';
     }
@@ -158,7 +175,7 @@ module.directive('dbUserLogin', ['Session', 'SessionStore' , function(Session, S
       return attrs.dbTemplateUrl
     },
     scope: {
-      organization: "=dbOrganization"
+      organization: "=dbOrganization",
     },
     link: function(scope, element, attributes, ngModel) {
       scope.user = {};
