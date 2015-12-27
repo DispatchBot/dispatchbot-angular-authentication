@@ -9,7 +9,7 @@
   "engines": {
     "npm": "2.1.5"
   },
-  "dependencies": {
+  "devDependencies": {
     "karma": "^0.12.32",
     "karma-chrome-launcher": "^0.1.12",
     "karma-jasmine": "^0.3.5"
