@@ -1,4 +1,4 @@
-function(angular) {
+(function(angular) {
   var module = angular.module('dispatchbot.authentication', ['ngResource', 'ngCookies']);
 
   /**
@@ -203,4 +203,4 @@ function(angular) {
       }
     };
   }]);
-}(angular);
+})(angular);
