@@ -1,3 +1,6 @@
+var ngCookies = require('angular-cookies');
+var ngResource = require('angular-resource');
+
 (function(angular) {
   var module = angular.module('dispatchbot.authentication', ['ngResource', 'ngCookies']);
 
@@ -24,6 +27,7 @@
       redirect($location, $window);
     });
 
+    // TODO: Get rid of ShuttleBot config!
     var host = function() {
       var parts = ShuttleBotConfig.host.split('.');
       if (parts.length > 2) {
@@ -44,6 +48,7 @@
       var desiredOrganizationKey = data.data.organization_key
 
       if (desiredOrganizationKey) {
+        // TODO: ShuttleBot config!!
         $window.location.href = ShuttleBotConfig.protocol + desiredOrganizationKey + "." + ShuttleBotConfig.host + "/#/login"
       } else {
         $scope.message = 'Error: Invalid user or password';
@@ -95,6 +100,7 @@
     return SessionStore;
   }]);
 
+  // TODO: Config object!!!
   module.factory('Session', ['$resource', 'DispatchBotConfig', '$window', function($resource, DispatchBotConfig, $window) {
     return $resource(DispatchBotConfig.api_host + '/users/:action.json', {}, {
       login: {
@@ -112,6 +118,7 @@
     });
   }]);
 
+  // TODO: Config object!!
   module.factory('Organization', ['$resource', 'DispatchBotConfig', function($resource, DispatchBotConfig) {
     return $resource(DispatchBotConfig.api_host + '/organizations', {}, {
       lookup: {
