@@ -1,6 +1,6 @@
 module.exports = function(appModule) {
   appModule.provider('Organization', function() {
-    var _config = config;
+    var _config;
     return {
       configure: function(config) {
         _config = config;

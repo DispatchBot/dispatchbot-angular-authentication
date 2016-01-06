@@ -1,7 +1,7 @@
 require('angular-resource');
 require('angular-cookies');
 
-module.exports = function() {
+(function() {
   var appModule = angular.module('dispatchbot.authentication', [
     'ngResource',
     'ngCookies'
@@ -16,4 +16,6 @@ module.exports = function() {
   require('./login.controller')(appModule);
   require('./logout.controller')(appModule);
   require('./unauthorized.controller')(appModule);
-}
+})();
+
+module.exports = {};
