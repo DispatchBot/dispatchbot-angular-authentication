@@ -1,5 +1,12 @@
 module.exports = function(appModule) {
-  appModule.factory('SessionStore', ['$cookies', function($cookies) {
+
+  appModule.factory('SessionStore', ['$cookies', SessionStore]);
+
+  if (ON_TEST) {
+    require('./session-store.test')(appModule);
+  }
+
+  function SessionStore($cookies) {
     var SessionStore = {};
     SessionStore.getUserId = function() {
       return $cookies.get('user_id');
@@ -14,6 +21,7 @@ module.exports = function(appModule) {
     };
 
     SessionStore.store = function(data) {
+      options = {};
       $cookies.put('token', data.token, options);
       $cookies.put('login', data.login, options);
       $cookies.put('user_id', data.user_id, options);
@@ -30,5 +38,5 @@ module.exports = function(appModule) {
     };
 
     return SessionStore;
-  }]);
+  };
 }
