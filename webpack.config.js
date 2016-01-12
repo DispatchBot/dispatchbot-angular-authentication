@@ -5,7 +5,7 @@ module.exports = {
   entry: './index.js',
   output: {
     path: __dirname + '/dist',
-    filename: 'bundle.js'
+    filename: 'dispatchbot-authentication.js'
   },
 
   plugins: [
@@ -13,6 +13,12 @@ module.exports = {
       ON_TEST: process.env.NODE_ENV === 'test'
     })
   ],
+
+  externals: {
+    'angular': 'angular',
+    'angular-resource': 'ngResource',
+    'angular-cookies': 'ngCookies'
+  },
 
   module: {
     loaders: [
