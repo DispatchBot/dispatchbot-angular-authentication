@@ -12,7 +12,7 @@ Define it in your `bower.json`
       "name": "my-dispatchbot-app",
       ...
       "dependencies": {
-        "angular": "~1.3.0",
+        "angular": "~1.4.8",
         ...
         "dispatchbot-angular-authentication": "DispatchBot/dispatchbot-angular-authentication#master"
       }
