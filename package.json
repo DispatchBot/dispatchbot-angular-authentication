@@ -10,6 +10,7 @@
     "npm": "2.1.5"
   },
   "scripts": {
+    "prepublish": "npm build",
     "build": "rm -rf dist && NODE_ENV=production node node_modules/.bin/webpack",
     "test": "NODE_ENV=test karma start karma.conf.js  --single-run"
   },

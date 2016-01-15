@@ -14,12 +14,6 @@ module.exports = {
     })
   ],
 
-  externals: {
-    'angular': 'angular',
-    'angular-resource': 'ngResource',
-    'angular-cookies': 'ngCookies'
-  },
-
   module: {
     loaders: [
       //{ test: /\.js$/, loader: 'babel', exclude: /node_modules/ }

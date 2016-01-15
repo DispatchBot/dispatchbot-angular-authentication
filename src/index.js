@@ -1,12 +1,3 @@
-var angular = require('angular');
-
-require('angular-resource');
-require('angular-cookies');
-
-if (ON_TEST) {
-  require('angular-mocks/angular-mocks');
-}
-
 (function() {
   var appModule = angular.module('dispatchbot.authentication', [
     'ngResource',
@@ -22,6 +13,15 @@ if (ON_TEST) {
   require('./login.controller')(appModule);
   require('./logout.controller')(appModule);
   require('./unauthorized.controller')(appModule);
+
+
+  /**
+   * ON_TEST is set by webpack (see the config for how). This approach allows us to
+   * pass the appModule into the test module so that everything is encapsulated nicely.
+   */
+  if (ON_TEST) {
+    require('./session-store.test')(appModule);
+  }
 })();
 
 module.exports = {};

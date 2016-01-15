@@ -2,10 +2,6 @@ module.exports = function(appModule) {
 
   appModule.factory('SessionStore', ['$cookies', SessionStore]);
 
-  if (ON_TEST) {
-    require('./session-store.test')(appModule);
-  }
-
   function SessionStore($cookies) {
     var SessionStore = {};
     SessionStore.getUserId = function() {
