@@ -56,11 +56,6 @@
 	  __webpack_require__(4)(appModule);
 	  __webpack_require__(5)(appModule);
 
-	  __webpack_require__(6)(appModule);
-	  __webpack_require__(7)(appModule);
-	  __webpack_require__(8)(appModule);
-
-
 	  /**
 	   * ON_TEST is set by webpack (see the config for how). This approach allows us to
 	   * pass the appModule into the test module so that everything is encapsulated nicely.
@@ -278,90 +273,6 @@
 	      }
 	    };
 	  }]);
-	}
-
-
-/***/ },
-/* 6 */
-/***/ function(module, exports) {
-
-	module.exports = function(appModule) {
-	  /**
-	   * Our authentication controllers.
-	   */
-	  appModule.controller('LoginController', ['$scope', '$rootScope', '$window', '$location', 'Session', 'SessionStore', function ($scope, $rootScope, $window, $location, Session, SessionStore) {
-	    var redirect = function($location, $window) {
-	      var redirectTo = '/';
-	      if ($window.sessionStorage.redirectAfterAuth) {
-	        redirectTo = $window.sessionStorage.redirectAfterAuth;
-	        delete $window.sessionStorage.redirectAfterAuth;
-	      }
-	      $location.path(redirectTo);
-	    };
-
-	    if (SessionStore.isLoggedIn()) {
-	      redirect($location, $window);
-	      return;
-	    }
-
-	    $scope.$on('dispatchbot.authentication.success', function (event, data) {
-	      $rootScope.parentMessage = "You have logged in successfully.";
-	      redirect($location, $window);
-	    });
-
-	    // TODO: Get rid of ShuttleBot config!
-	    var host = function() {
-	      var parts = ShuttleBotConfig.host.split('.');
-	      if (parts.length > 2) {
-	        return parts[1] + '.' + parts[2]
-	      } else  {
-	        return ShuttleBotConfig.host
-	      }
-	    }
-
-	    // TODO: This should move to ShuttleBot
-	    if (document.referrer == ShuttleBotConfig.protocol +  host() + '/' && !$rootScope.redirectFromResolve) {
-	      $rootScope.redirectFromResolve = true;
-	      $rootScope.withOrganization.promise.then(function() {
-	        $scope.message = "We identified that you are using ShuttleBot with " + $rootScope.organization.name + " and redirected you to their homepage. Please try to login again.";
-	      });
-	    }
-
-	    $scope.$on('dispatchbot.authentication.failure', function (event, data) {
-	      var desiredOrganizationKey = data.data.organization_key
-
-	      if (desiredOrganizationKey) {
-	        // TODO: ShuttleBot config!!
-	        $window.location.href = ShuttleBotConfig.protocol + desiredOrganizationKey + "." + ShuttleBotConfig.host + "/#/login"
-	      } else {
-	        $scope.message = 'Error: Invalid user or password';
-	      }
-	    });
-	  }])
-	}
-
-
-/***/ },
-/* 7 */
-/***/ function(module, exports) {
-
-	module.exports = function(appModule) {
-	  appModule.controller('LogoutController', ['Session', 'SessionStore', function(Session, SessionStore) {
-	    Session.logout(function() {
-	      SessionStore.destroy();
-	    })
-	  }])
-	}
-
-
-/***/ },
-/* 8 */
-/***/ function(module, exports) {
-
-	module.exports = function(appModule) {
-	  appModule.controller('UnauthorizedController', ['$scope', function($scope) {
-	    // Just render a view
-	  }])
 	}
 
 
