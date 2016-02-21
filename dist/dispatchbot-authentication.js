@@ -86,7 +86,7 @@
 	    var cache = CacheFactory.get('sessionStore');
 	    if (!cache) {
 	      cache = CacheFactory.createCache('sessionStore', {
-	        deleteOnExpire: true,
+	        deleteOnExpire: 'aggressive',
 	        recycleFreq: 60000
 	      });
 	    }
