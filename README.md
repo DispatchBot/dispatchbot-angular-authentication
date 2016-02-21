@@ -28,32 +28,20 @@ In your `app.js` you need to define the authentication config and interceptor.
       ...
     ]).
     // Configure where the API lives. Needed by our session service.
-    .constant('DispatchBotConfig', { 'api_host': 'http://localhost:3000' }).
+    .constant('DispatchBotConfig', { 'api_host': 'http://localhost:3000' })
+
     // Register the interceptor that handles the authentication.
-    config(function ($httpProvider) {
+    .config(function ($httpProvider) {
       $httpProvider.interceptors.push('authInterceptor');
-    });
-
-### Controllers
-
-To create a login controller:
-
-    // Define the authentication controllers and routing
-    app.config(['$routeProvider', function($routeProvider) {
-      $routeProvider.when('/login', {
-        templateUrl: 'partials/login.html',
-        controller: 'LoginController'
-      }).when('/logout', {
-        templateUrl: 'partials/logout.html',
-        controller: 'LogoutController'
-      })
     })
 
-Note that the resource paths such as `/login` are currently fixed and cannot be
-customized.
+    // Configure the cache storage
+    .config(['CacheFactoryProvider', function(CacheFactoryProvider) {
+      angular.extend(CacheFactoryProvider.defaults, {
+        storageMode: 'sessionStorage' // Other values are 'localStorage', or 'memory'
+      });
+    }]);
 
-You should now be able to start your application. Any HTTP calls that return a 401
-will be automatically redirected to have the user login.
 
 ### Directive
 
