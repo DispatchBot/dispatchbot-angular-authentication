@@ -1,7 +1,7 @@
 (function() {
   var appModule = angular.module('dispatchbot.authentication', [
     'ngResource',
-    'ngCookies'
+    'angular-cache'
   ]);
 
   require('./session-store')(appModule);

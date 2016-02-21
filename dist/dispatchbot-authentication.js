@@ -44,30 +44,30 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var angular = __webpack_require__(1);
-
-	__webpack_require__(2);
-	__webpack_require__(3);
-
-	if (false) {
-	  require('angular-mocks/angular-mocks');
-	}
-
 	(function() {
 	  var appModule = angular.module('dispatchbot.authentication', [
 	    'ngResource',
-	    'ngCookies'
+	    'angular-cache'
 	  ]);
 
+	  __webpack_require__(1)(appModule);
+	  __webpack_require__(2)(appModule);
+	  __webpack_require__(3)(appModule);
 	  __webpack_require__(4)(appModule);
 	  __webpack_require__(5)(appModule);
+
 	  __webpack_require__(6)(appModule);
 	  __webpack_require__(7)(appModule);
 	  __webpack_require__(8)(appModule);
 
-	  __webpack_require__(9)(appModule);
-	  __webpack_require__(10)(appModule);
-	  __webpack_require__(11)(appModule);
+
+	  /**
+	   * ON_TEST is set by webpack (see the config for how). This approach allows us to
+	   * pass the appModule into the test module so that everything is encapsulated nicely.
+	   */
+	  if (false) {
+	    require('./session-store.test')(appModule);
+	  }
 	})();
 
 	module.exports = {};
@@ -77,61 +77,48 @@
 /* 1 */
 /***/ function(module, exports) {
 
-	module.exports = angular;
-
-/***/ },
-/* 2 */
-/***/ function(module, exports) {
-
-	module.exports = ngResource;
-
-/***/ },
-/* 3 */
-/***/ function(module, exports) {
-
-	module.exports = ngCookies;
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
 	module.exports = function(appModule) {
 
-	  appModule.factory('SessionStore', ['$cookies', SessionStore]);
+	  appModule.factory('SessionStore', ['CacheFactory', SessionStore]);
 
-	  if (false) {
-	    require('./session-store.test')(appModule);
-	  }
+	  function SessionStore(CacheFactory) {
 
-	  function SessionStore($cookies) {
+	    var cache = CacheFactory.get('sessionStore');
+	    if (!cache) {
+	      cache = CacheFactory.createCache('sessionStore', {
+	        deleteOnExpire: true,
+	        recycleFreq: 60000
+	      });
+	    }
+
 	    var SessionStore = {};
 	    SessionStore.getUserId = function() {
-	      return $cookies.get('user_id');
+	      return cache.get('user_id');
 	    };
 
 	    SessionStore.getToken = function() {
-	      return $cookies.get('token');
+	      return cache.get('token');
 	    };
 
 	    SessionStore.getLogin = function() {
-	      return $cookies.get('login');
+	      return cache.get('login');
 	    };
 
 	    SessionStore.store = function(data) {
 	      options = {};
-	      $cookies.put('token', data.token, options);
-	      $cookies.put('login', data.login, options);
-	      $cookies.put('user_id', data.user_id, options);
+	      cache.put('token', data.token, options);
+	      cache.put('login', data.login, options);
+	      cache.put('user_id', data.user_id, options);
 	    };
 
 	    SessionStore.destroy = function() {
-	      delete $cookies.remove('user_id');
-	      delete $cookies.remove('token');
-	      delete $cookies.remove('login');
+	      cache.remove('user_id');
+	      cache.remove('token');
+	      cache.remove('login');
 	    };
 
 	    SessionStore.isLoggedIn = function() {
-	      return !!$cookies.get('token');
+	      return !!cache.get('token');
 	    };
 
 	    return SessionStore;
@@ -140,7 +127,7 @@
 
 
 /***/ },
-/* 5 */
+/* 2 */
 /***/ function(module, exports) {
 
 	module.exports = function(appModule) {
@@ -175,7 +162,7 @@
 
 
 /***/ },
-/* 6 */
+/* 3 */
 /***/ function(module, exports) {
 
 	module.exports = function(appModule) {
@@ -205,7 +192,7 @@
 
 
 /***/ },
-/* 7 */
+/* 4 */
 /***/ function(module, exports) {
 
 	module.exports = function(appModule) {
@@ -254,7 +241,7 @@
 
 
 /***/ },
-/* 8 */
+/* 5 */
 /***/ function(module, exports) {
 
 	module.exports = function(appModule) {
@@ -295,7 +282,7 @@
 
 
 /***/ },
-/* 9 */
+/* 6 */
 /***/ function(module, exports) {
 
 	module.exports = function(appModule) {
@@ -355,7 +342,7 @@
 
 
 /***/ },
-/* 10 */
+/* 7 */
 /***/ function(module, exports) {
 
 	module.exports = function(appModule) {
@@ -368,7 +355,7 @@
 
 
 /***/ },
-/* 11 */
+/* 8 */
 /***/ function(module, exports) {
 
 	module.exports = function(appModule) {

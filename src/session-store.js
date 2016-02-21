@@ -1,36 +1,45 @@
 module.exports = function(appModule) {
 
-  appModule.factory('SessionStore', ['$cookies', SessionStore]);
+  appModule.factory('SessionStore', ['CacheFactory', SessionStore]);
 
-  function SessionStore($cookies) {
+  function SessionStore(CacheFactory) {
+
+    var cache = CacheFactory.get('sessionStore');
+    if (!cache) {
+      cache = CacheFactory.createCache('sessionStore', {
+        deleteOnExpire: true,
+        recycleFreq: 60000
+      });
+    }
+
     var SessionStore = {};
     SessionStore.getUserId = function() {
-      return $cookies.get('user_id');
+      return cache.get('user_id');
     };
 
     SessionStore.getToken = function() {
-      return $cookies.get('token');
+      return cache.get('token');
     };
 
     SessionStore.getLogin = function() {
-      return $cookies.get('login');
+      return cache.get('login');
     };
 
     SessionStore.store = function(data) {
       options = {};
-      $cookies.put('token', data.token, options);
-      $cookies.put('login', data.login, options);
-      $cookies.put('user_id', data.user_id, options);
+      cache.put('token', data.token, options);
+      cache.put('login', data.login, options);
+      cache.put('user_id', data.user_id, options);
     };
 
     SessionStore.destroy = function() {
-      delete $cookies.remove('user_id');
-      delete $cookies.remove('token');
-      delete $cookies.remove('login');
+      cache.remove('user_id');
+      cache.remove('token');
+      cache.remove('login');
     };
 
     SessionStore.isLoggedIn = function() {
-      return !!$cookies.get('token');
+      return !!cache.get('token');
     };
 
     return SessionStore;
