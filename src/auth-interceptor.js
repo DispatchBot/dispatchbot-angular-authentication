@@ -17,12 +17,16 @@ module.exports = function(appModule) {
 
     return {
       request: function (config) {
-        
+
         config.headers = config.headers || {};
         if (SessionStore.isLoggedIn()) {
           config.headers['X-User-Email'] = SessionStore.getLogin();
           config.headers['X-User-Token'] = SessionStore.getToken();
+        } else {
+          delete config.headers['X-User-Email'];
+          delete config.headers['X-User-Token'];
         }
+
         return config;
       },
 

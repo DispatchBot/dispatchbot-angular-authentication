@@ -14,6 +14,11 @@ module.exports = function(appModule) {
             method: 'POST',
             params: {
               action: 'sign_in'
+            },
+            // Do not pass auth headers with this route.
+            headers: {
+              'X-User-Email': undefined,
+              'X-User-Token': undefined
             }
           },
           logout: {
