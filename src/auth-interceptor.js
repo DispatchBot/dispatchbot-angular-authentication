@@ -12,7 +12,7 @@ module.exports = function(appModule) {
     };
 
     var handle403 = function(response) {
-      $rootScope.$broadcast('dispatchbot:authorization:failure');
+      $rootScope.$broadcast('dispatchbot:authorization:failure', response);
     };
 
     return {
