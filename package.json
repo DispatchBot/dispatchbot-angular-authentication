@@ -1,7 +1,7 @@
 {
   "name": "dispatchbot-angular-authentication",
   "private": true,
-  "version": "0.6.1",
+  "version": "0.6.2",
   "main": "dist/dispatchbot-authentication.js",
   "description": "Provides functionality for authenticating with the DispatchBot API. To be used in an angular application.",
   "repository": "https://github.com/DispatchBot/dispatchbot-reservations",
