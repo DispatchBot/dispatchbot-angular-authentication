@@ -2,6 +2,8 @@ module.exports = function(appModule) {
   appModule.factory('authInterceptor', ['$rootScope', '$q', '$window', '$location', 'SessionStore', function ($rootScope, $q, $window, $location, SessionStore) {
     var loginPath = '/login'; // TODO: This should not be hard-coded
 
+    var WHITELIST_DOMAINS = [ 'localhost', 'dispatchbot.com', 'dpb.local' ];
+
     var handle401 = function(response) {
       SessionStore.destroy();
       if ($location.path().toLowerCase() != loginPath) {
@@ -17,9 +19,10 @@ module.exports = function(appModule) {
 
     return {
       request: function (config) {
+        var isDispatchBot = WHITELIST_DOMAINS.map(d => config.url.indexOf(d) >= 0).indexOf(true) >= 0;
 
         config.headers = config.headers || {};
-        if (SessionStore.isLoggedIn()) {
+        if (isDispatchBot && SessionStore.isLoggedIn()) {
           config.headers['X-User-Email'] = SessionStore.getLogin();
           config.headers['X-User-Token'] = SessionStore.getToken();
         } else {

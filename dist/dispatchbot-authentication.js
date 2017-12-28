@@ -42,7 +42,7 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	(function() {
 	  var appModule = angular.module('dispatchbot.authentication', [
@@ -68,9 +68,9 @@
 	module.exports = {};
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = function(appModule) {
 
@@ -121,9 +121,9 @@
 	}
 
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = function(appModule) {
 
@@ -141,6 +141,11 @@
 	            method: 'POST',
 	            params: {
 	              action: 'sign_in'
+	            },
+	            // Do not pass auth headers with this route.
+	            headers: {
+	              'X-User-Email': undefined,
+	              'X-User-Token': undefined
 	            }
 	          },
 	          logout: {
@@ -156,9 +161,9 @@
 	}
 
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = function(appModule) {
 	  appModule.provider('Organization', function() {
@@ -186,13 +191,15 @@
 	}
 
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = function(appModule) {
 	  appModule.factory('authInterceptor', ['$rootScope', '$q', '$window', '$location', 'SessionStore', function ($rootScope, $q, $window, $location, SessionStore) {
 	    var loginPath = '/login'; // TODO: This should not be hard-coded
+
+	    var WHITELIST_DOMAINS = [ 'localhost', 'dispatchbot.com', 'dpb.local' ];
 
 	    var handle401 = function(response) {
 	      SessionStore.destroy();
@@ -204,17 +211,22 @@
 	    };
 
 	    var handle403 = function(response) {
-	      $rootScope.$broadcast('dispatchbot:authorization:failure');
+	      $rootScope.$broadcast('dispatchbot:authorization:failure', response);
 	    };
 
 	    return {
 	      request: function (config) {
-	        
+	        var isDispatchBot = WHITELIST_DOMAINS.map(d => config.url.indexOf(d) >= 0).indexOf(true) >= 0;
+
 	        config.headers = config.headers || {};
-	        if (SessionStore.isLoggedIn()) {
+	        if (isDispatchBot && SessionStore.isLoggedIn()) {
 	          config.headers['X-User-Email'] = SessionStore.getLogin();
 	          config.headers['X-User-Token'] = SessionStore.getToken();
+	        } else {
+	          delete config.headers['X-User-Email'];
+	          delete config.headers['X-User-Token'];
 	        }
+
 	        return config;
 	      },
 
@@ -235,9 +247,9 @@
 	}
 
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = function(appModule) {
 	  appModule.directive('dbUserLogin', ['Session', 'SessionStore' , function(Session, SessionStore) {
@@ -276,5 +288,5 @@
 	}
 
 
-/***/ }
+/***/ })
 /******/ ]);
