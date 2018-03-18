@@ -216,7 +216,9 @@
 
 	    return {
 	      request: function (config) {
-	        var isDispatchBot = WHITELIST_DOMAINS.map(d => config.url.indexOf(d) >= 0).indexOf(true) >= 0;
+	        var isDispatchBot = WHITELIST_DOMAINS.map(function(d) {
+	          return config.url.indexOf(d) >= 0;
+	        }).indexOf(true) >= 0;
 
 	        config.headers = config.headers || {};
 	        if (isDispatchBot && SessionStore.isLoggedIn()) {
